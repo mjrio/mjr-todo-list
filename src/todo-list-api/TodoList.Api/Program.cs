@@ -9,6 +9,8 @@ builder.Services.AddDbContext<TodoListContext>(options => options.UseInMemoryDat
 
 var app = builder.Build();
 
+app.MapGet("/", () => "Hello, World!");
+
 app.MapGet("/todos", async (TodoListContext context) =>
 {
     var todos = await context.Todos.ToListAsync();
@@ -20,7 +22,7 @@ app.MapGet("/todos/{id}", async (int id, TodoListContext context) =>
 {
     var todo = await context.Todos.FindAsync(id);
 
-    return todo != null ? Results.Ok(todo) : Results.NotFound();
+    return todo is not null ? Results.Ok(todo) : Results.NotFound();
 });
 
 app.MapPost("/todos", async (Todo todo, TodoListContext context) =>
@@ -31,11 +33,27 @@ app.MapPost("/todos", async (Todo todo, TodoListContext context) =>
     return Results.Created($"/todos/{todo.Id}", todo);
 });
 
+app.MapPut("/todos/{id}", async (int id, Todo todo, TodoListContext context) =>
+{
+    var existingTodo = await context.Todos.FindAsync(id);
+
+    if (existingTodo is null)
+    {
+        return Results.NotFound();
+    }
+
+    existingTodo.Description = todo.Description;
+    existingTodo.IsDone = todo.IsDone;
+    await context.SaveChangesAsync();
+
+    return Results.NoContent();
+});
+
 app.MapDelete("/todos/{id}", async (int id, TodoListContext context) =>
 {
     var todo = await context.Todos.FindAsync(id);
 
-    if (todo != null)
+    if (todo is not null)
     {
         context.Todos.Remove(todo);
         await context.SaveChangesAsync();
