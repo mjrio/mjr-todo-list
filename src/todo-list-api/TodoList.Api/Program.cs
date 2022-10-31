@@ -1,12 +1,23 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors()
-                .AddDbContext<TodoListContext>(options => options.UseInMemoryDatabase("TodoListInMemory"));
+builder.Services.AddCors();
+
+var dbProvider = builder.Configuration.GetValue<DbProvider>("Database:Provider");
+var dbConnectionString = builder.Configuration.GetValue<string>("Database:ConnectionString");
+
+_ = dbProvider switch
+{
+    DbProvider.InMemory => builder.Services.AddDbContext<TodoListContext>(options => options.UseInMemoryDatabase("TodoList")),
+    DbProvider.Postgres => builder.Services.AddDbContext<TodoListContext>(options => options.UseNpgsql(dbConnectionString)),
+    _ => throw new NotSupportedException("Only database providers InMemory and Postgres are supported"),
+};
 
 var app = builder.Build();
 

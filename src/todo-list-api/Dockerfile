@@ -9,5 +9,5 @@ RUN dotnet publish "TodoList.Api.csproj" -c Release -o /app/publish --no-restore
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-EXPOSE 80
+EXPOSE 5166
 ENTRYPOINT ["dotnet", "TodoList.Api.dll"]
