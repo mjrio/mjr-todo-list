@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +30,7 @@ app.MapGet("/", () => "Hello, World!");
 
 app.MapGet("/todos", async (TodoListContext context) =>
 {
-    var todos = await context.Todos.ToListAsync();
+    var todos = await context.Todos.OrderByDescending(t => t.CreatedOn).ToListAsync();
 
     return todos;
 });
@@ -43,6 +44,8 @@ app.MapGet("/todos/{id}", async (int id, TodoListContext context) =>
 
 app.MapPost("/todos", async (Todo todo, TodoListContext context) =>
 {
+    todo.CreatedOn = DateTime.UtcNow;
+
     context.Todos.Add(todo);
     await context.SaveChangesAsync();
 
@@ -58,7 +61,6 @@ app.MapPut("/todos/{id}", async (int id, Todo todo, TodoListContext context) =>
         return Results.NotFound();
     }
 
-    existingTodo.Description = todo.Description;
     existingTodo.IsDone = todo.IsDone;
     await context.SaveChangesAsync();
 
