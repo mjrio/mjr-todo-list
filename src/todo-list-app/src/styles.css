@@ -1,0 +1,6 @@
+/* You can add global styles to this file, and also import other style files */
+@import "https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css";
+
+.done {
+    text-decoration: line-through;
+}
