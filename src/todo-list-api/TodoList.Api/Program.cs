@@ -5,9 +5,14 @@ using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<TodoListContext>(options => options.UseInMemoryDatabase("TodoListInMemory"));
+builder.Services.AddCors()
+                .AddDbContext<TodoListContext>(options => options.UseInMemoryDatabase("TodoListInMemory"));
 
 var app = builder.Build();
+
+app.UseCors(builder => builder.AllowAnyHeader()
+                              .AllowAnyMethod()
+                              .AllowAnyOrigin());
 
 app.MapGet("/", () => "Hello, World!");
 
