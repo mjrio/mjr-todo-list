@@ -24,7 +24,7 @@
 
 3. Run todo-list-db, todo-list-api and todo-list-app:
     ```
-    docker run --name todo-list-db -e POSTGRES_PASSWORD=password -e PGDATA=/var/lib/postgresql/data/pgdata -v todo-list-db-volume:/var/lib/postgresql/data -dp 5432:5432 --net todo-list-network postgres
+    docker run --name todo-list-db -e POSTGRES_PASSWORD=password -e PGDATA=/var/lib/postgresql/data/pgdata -v todo-list-db-volume:/var/lib/postgresql/data -dp 5432:5432 --net todo-list-network postgres:15.0-alpine
     ```
     ```
     docker run --name todo-list-api -dp 5166:5166 --net todo-list-network todo-list-api
