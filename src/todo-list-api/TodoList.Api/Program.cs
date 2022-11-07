@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.IO;
 using System.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -84,6 +85,28 @@ app.MapDelete("/todos/{id}", async (int id, TodoListContext context) =>
     }
 
     return Results.NotFound();
+});
+
+app.MapPost("/reports", async (TodoListContext context, IConfiguration configuration) =>
+{
+    var directory = configuration["Reports:Path"];
+    var filePath = Path.Combine(directory, $"{DateTime.UtcNow:yyyyMMddHHmmss}-report.txt");
+
+    if (File.Exists(filePath))
+    {
+        return Results.Conflict($"Report {filePath} already exists.");
+    }
+    else
+    {
+        var contents = await context.Todos.OrderByDescending(t => t.CreatedOn)
+                                          .Select(t => $"To do \"{t.Description}\" is {(t.IsDone ? "done!" : "not done yet.")}")
+                                          .ToListAsync();
+
+        Directory.CreateDirectory(directory);
+        await File.WriteAllLinesAsync(filePath, contents);
+
+        return Results.Ok($"Report written to {filePath}.");
+    }
 });
 
 app.Run();
