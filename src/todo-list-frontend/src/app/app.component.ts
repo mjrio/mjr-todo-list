@@ -19,10 +19,12 @@ import { Todo, TodoListApiService } from './todo-list-api.service';
     </form>
   </section>
 
+  <hr>
+
   <ng-container *ngIf="$todos | async as todos">
-    <section *ngIf="todos.length">
+    <section>
       <h2>Your to do's</h2>
-      <table>
+      <table *ngIf="todos.length">
         <tr *ngFor="let todo of todos">
           <td [class.done]="todo.isDone">{{ todo.description }}</td>
           <td>
@@ -31,8 +33,17 @@ import { Todo, TodoListApiService } from './todo-list-api.service';
           </td>
         </tr>
       </table>
+      <p *ngIf="!todos.length">There's nothing to do...</p>
     </section>
   </ng-container>
+
+  <hr>
+
+  <section>
+    <h2>Create report</h2>
+    <p>Click the button below to create a new report.</p>
+    <button type="submit" (click)="createReport()">Create report</button>
+  </section>
   `,
   styles: []
 })
@@ -61,13 +72,17 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscriptions.add(this.todoListApiService.createTodo(todo).subscribe(() => this.$refresh.next(true)));
   }
 
-  deleteTodo(todo: Todo): void {
-    this.subscriptions.add(this.todoListApiService.deleteTodo(todo).subscribe(() => this.$refresh.next(true)));
-  }
-
   markDone(todo: Todo): void {
     todo.isDone = true;
 
     this.subscriptions.add(this.todoListApiService.updateTodo(todo).subscribe(() => this.$refresh.next(true)));
+  }
+
+  deleteTodo(todo: Todo): void {
+    this.subscriptions.add(this.todoListApiService.deleteTodo(todo).subscribe(() => this.$refresh.next(true)));
+  }
+
+  createReport(): void {
+    this.subscriptions.add(this.todoListApiService.createReport().subscribe({ next: () => alert("Report successfully created!"), error: () => alert("Failed to create report. Please try again later.")}));
   }
 }

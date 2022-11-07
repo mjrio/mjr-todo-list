@@ -14,6 +14,10 @@ export class TodoListApiService {
     return this.httpClient.get<Todo[]>(`${this.baseUrl}/todos`);
   }
 
+  getTodo(todo: Todo): Observable<Todo> {
+    return this.httpClient.get<Todo>(`${this.baseUrl}/todos/${todo.id}`);
+  }
+
   createTodo(todo: Todo): Observable<Todo> {
     return this.httpClient.post<Todo>(`${this.baseUrl}/todos`, todo);
   }
@@ -24,6 +28,10 @@ export class TodoListApiService {
 
   deleteTodo(todo: Todo): Observable<Todo> {
     return this.httpClient.delete<Todo>(`${this.baseUrl}/todos/${todo.id}`)
+  }
+
+  createReport(): Observable<void> {
+    return this.httpClient.post<void>(`${this.baseUrl}/reports`, { });
   }
 }
 

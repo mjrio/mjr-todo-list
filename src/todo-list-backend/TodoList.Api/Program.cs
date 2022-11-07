@@ -11,7 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors()
                 .AddEndpointsApiExplorer()
-                .AddSwaggerGen();
+                .AddSwaggerGen()
+                .AddHttpClient<IReportsClient, ReportsClient>(httpClient => httpClient.BaseAddress = new Uri(builder.Configuration["Reports:Address"]));
 
 var dbProvider = builder.Configuration.GetValue<DbProvider>("Database:Provider");
 var dbConnectionString = builder.Configuration.GetValue<string>("Database:ConnectionString");
@@ -87,7 +88,7 @@ app.MapDelete("/todos/{id}", async (int id, TodoListContext context) =>
     return Results.NotFound();
 });
 
-app.MapPost("/reports", async (TodoListContext context, IConfiguration configuration) =>
+app.MapPost("/reports", async (TodoListContext context, IReportsClient reportsClient, IConfiguration configuration) =>
 {
     var directory = configuration["Reports:Path"];
     var filePath = Path.Combine(directory, $"{DateTime.UtcNow:yyyyMMddHHmmss}-report.txt");
@@ -98,12 +99,11 @@ app.MapPost("/reports", async (TodoListContext context, IConfiguration configura
     }
     else
     {
-        var contents = await context.Todos.OrderByDescending(t => t.CreatedOn)
-                                          .Select(t => $"To do \"{t.Description}\" is {(t.IsDone ? "done!" : "not done yet.")}")
-                                          .ToListAsync();
+        var todos = await context.Todos.OrderByDescending(t => t.CreatedOn).ToListAsync();
+        var report = await reportsClient.GetReport(todos);
 
         Directory.CreateDirectory(directory);
-        await File.WriteAllLinesAsync(filePath, contents);
+        await File.WriteAllLinesAsync(filePath, report);
 
         return Results.Ok($"Report written to {filePath}.");
     }
