@@ -8,7 +8,9 @@ using System.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors();
+builder.Services.AddCors()
+                .AddEndpointsApiExplorer()
+                .AddSwaggerGen();
 
 var dbProvider = builder.Configuration.GetValue<DbProvider>("Database:Provider");
 var dbConnectionString = builder.Configuration.GetValue<string>("Database:ConnectionString");
@@ -24,7 +26,9 @@ var app = builder.Build();
 
 app.UseCors(builder => builder.AllowAnyHeader()
                               .AllowAnyMethod()
-                              .AllowAnyOrigin());
+                              .AllowAnyOrigin())
+   .UseSwagger()
+   .UseSwaggerUI();
 
 app.MapGet("/", () => "Hello, World!");
 
