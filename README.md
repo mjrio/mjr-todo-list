@@ -37,15 +37,15 @@
 3. Run todo-list-db, todo-list-reports-api, todo-list-api and todo-list-app:
 
     ```
-    docker run --name todo-list-db -e POSTGRES_PASSWORD=password -e PGDATA=/var/lib/postgresql/data/pgdata -v todo-list-db-volume:/var/lib/postgresql/data -dp 5432:5432 --net todo-list-network postgres:15.0-alpine
+    docker run --name todo-list-db -e POSTGRES_PASSWORD=password -e PGDATA=/var/lib/postgresql/data/pgdata -v todo-list-db-volume:/var/lib/postgresql/data -d --net todo-list-network postgres:15.0-alpine
     ```
 
     ```
-    docker run --name todo-list-reports-api -dp 5218:5218 --net todo-list-network todo-list-reports-api
+    docker run --name todo-list-reports-api -d --net todo-list-network todo-list-reports-api
     ```
 
     ```
-    docker run --name todo-list-api -e Reports__Address=http://todo-list-reports-api:5218 -dp 5166:5166 --net todo-list-network todo-list-api
+    docker run --name todo-list-api -e Database__Provider=Postgres -e Database__ConnectionString="Host=todo-list-db:5432;Username=postgres;Password=password;Database=postgres" -e Reports__Address=http://todo-list-reports-api:5218 -dp 5166:5166 --net todo-list-network todo-list-api
     ```
 
     ```
