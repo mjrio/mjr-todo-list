@@ -51,3 +51,11 @@
     ```
     docker run --name todo-list-app -dp 8080:80 --net todo-list-network todo-list-app
     ```
+
+### Run on Docker Desktop using Docker Compose
+
+...
+
+### Run on Docker Desktop using Kubernetes
+
+...
