@@ -1,4 +1,6 @@
-﻿public enum DbProvider
+﻿namespace TodoList.Api;
+
+public enum DbProvider
 {
     InMemory,
     Postgres,

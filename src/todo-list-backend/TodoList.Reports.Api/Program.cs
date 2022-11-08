@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using System.Linq;
+using TodoList.Reports.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -4,6 +4,8 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 
+namespace TodoList.Api;
+
 public class ReportsClient : IReportsClient
 {
     private readonly HttpClient _httpClient;

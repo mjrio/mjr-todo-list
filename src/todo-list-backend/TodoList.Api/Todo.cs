@@ -1,5 +1,7 @@
 ﻿using System;
 
+namespace TodoList.Api;
+
 public class Todo
 {
     public int Id { get; set; }
