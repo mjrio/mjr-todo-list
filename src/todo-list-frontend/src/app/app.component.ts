@@ -21,10 +21,10 @@ import { Todo, TodoListApiService } from './todo-list-api.service';
 
   <hr>
 
-  <ng-container *ngIf="$todos | async as todos">
-    <section>
-      <h2>Your to do's</h2>
-      <table *ngIf="todos.length">
+  <section>
+    <h2>Your to do's</h2>
+    <ng-container *ngIf="$todos | async as todos; else noTodos">
+      <table *ngIf="todos.length; else noTodos">
         <tr *ngFor="let todo of todos">
           <td [class.done]="todo.isDone">{{ todo.description }}</td>
           <td>
@@ -33,9 +33,11 @@ import { Todo, TodoListApiService } from './todo-list-api.service';
           </td>
         </tr>
       </table>
-      <p *ngIf="!todos.length">There's nothing to do...</p>
-    </section>
-  </ng-container>
+    </ng-container>
+    <ng-template #noTodos>
+      <p>There's nothing to do...</p>
+    </ng-template>
+  </section>
 
   <hr>
 
@@ -69,20 +71,30 @@ export class AppComponent implements OnInit, OnDestroy {
   createTodo(): void {
     let todo = new Todo(this.description!, false);
 
-    this.subscriptions.add(this.todoListApiService.createTodo(todo).subscribe(() => this.$refresh.next(true)));
+    this.subscriptions.add(this.todoListApiService.createTodo(todo).subscribe({
+      next: () => this.$refresh.next(true),
+      error: () => alert("Failed to create to do. Please try again later.")
+    }));
   }
 
   markDone(todo: Todo): void {
-    todo.isDone = true;
-
-    this.subscriptions.add(this.todoListApiService.updateTodo(todo).subscribe(() => this.$refresh.next(true)));
+    this.subscriptions.add(this.todoListApiService.updateTodo({ ...todo, isDone: true }).subscribe({
+      next: () => this.$refresh.next(true),
+      error: () => alert("Failed to mark to do as done. Please try again later.")
+    }));
   }
 
   deleteTodo(todo: Todo): void {
-    this.subscriptions.add(this.todoListApiService.deleteTodo(todo).subscribe(() => this.$refresh.next(true)));
+    this.subscriptions.add(this.todoListApiService.deleteTodo(todo).subscribe({
+      next: () => this.$refresh.next(true),
+      error: () => alert("Failed to delete to do. Please try again later.")
+    }));
   }
 
   createReport(): void {
-    this.subscriptions.add(this.todoListApiService.createReport().subscribe({ next: () => alert("Report successfully created!"), error: () => alert("Failed to create report. Please try again later.")}));
+    this.subscriptions.add(this.todoListApiService.createReport().subscribe({ 
+      next: () => alert("Report successfully created!"), 
+      error: () => alert("Failed to create report. Please try again later.")
+    }));
   }
 }
