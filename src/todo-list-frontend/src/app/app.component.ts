@@ -15,7 +15,7 @@ import { Todo, TodoListApiService } from './todo-list-api.service';
     <form>
       <label for="description">Description</label>
       <input type="text" id="description" name="description" [(ngModel)]="description"/>
-      <input type="submit" (click)="createTodo()"/>
+      <input type="submit" [disabled]="!description.length" (click)="createTodo()"/>
     </form>
   </section>
 
@@ -55,7 +55,7 @@ export class AppComponent implements OnInit, OnDestroy {
   
   public $todos: Observable<Todo[]> | undefined;
 
-  public description: string | undefined;
+  public description: string = "";
 
   constructor(private todoListApiService: TodoListApiService) {
   }
@@ -69,10 +69,10 @@ export class AppComponent implements OnInit, OnDestroy {
   }
   
   createTodo(): void {
-    let todo = new Todo(this.description!, false);
+    let todo = new Todo(this.description, false);
 
     this.subscriptions.add(this.todoListApiService.createTodo(todo).subscribe({
-      next: () => this.$refresh.next(true),
+      next: () => { this.description = ""; this.$refresh.next(true); },
       error: () => alert("Failed to create to do. Please try again later.")
     }));
   }
