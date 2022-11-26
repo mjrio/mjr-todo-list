@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-list-api
+spec:
+  selector:
+    matchLabels:
+      app: todo-list-api
+  template:
+    metadata:
+      labels:
+        app: todo-list-api
+    spec:
+      containers:
+        - name: todo-list-api
+          image: todo-list-api:latest
+          imagePullPolicy: Never
+          env:
+            - name: Database__Provider
+              value: postgres
+Database__ConnectionString="Host=todo-list-db:5432;Username=postgres;Password=password;Database=postgres"
+Reports__Address=http://reports-api:5218
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: 200m
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-list-reports-api
+spec:
+  selector:
+    matchLabels:
+      app: todo-list-reports-api
+  template:
+    metadata:
+      labels:
+        app: todo-list-reports-api
+    spec:
+      containers:
+        - name: todo-list-reports-api
+          image: todo-list-reports-api:latest
+          imagePullPolicy: Never
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: 200m
