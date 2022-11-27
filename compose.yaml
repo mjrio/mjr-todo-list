@@ -2,14 +2,16 @@
 services:
   app:
     image: todo-list-app
-    build: ./todo-list-frontend
+    build: ./src/todo-list-frontend
     ports:
       - 8080:80
+    volumes:
+      - front-html:/usr/share/nginx/html
 
   api:
     image: todo-list-api
     build:
-      context: ./todo-list-backend/TodoList.Api
+      context: ./src/todo-list-backend/TodoList.Api
     ports:
       - 5166:5166
     env_file:
@@ -18,7 +20,7 @@ services:
   reports-api:
     image: todo-list-reports-api
     build:
-      context: ./todo-list-backend/TodoList.Reports.Api
+      context: ./src/todo-list-backend/TodoList.Reports.Api
       dockerfile: Dockerfile
 
   db:
@@ -27,3 +29,6 @@ services:
       - POSTGRES_PASSWORD=password
       - PGDATA=/var/lib/postgresql/data/pgdata
 
+volumes:
+  front-html:
+  db-data:
