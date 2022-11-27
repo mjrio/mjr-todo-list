@@ -1,19 +1,25 @@
 # Required
 services:
   app:
-    image: todo-list-app:latest
+    image: todo-list-app
+    build: ./todo-list-frontend
     ports:
       - 8080:80
 
   api:
-    image: todo-list-api:latest
+    image: todo-list-api
+    build:
+      context: ./todo-list-backend/TodoList.Api
     ports:
       - 5166:5166
     env_file:
       ./api.env
 
   reports-api:
-    image: todo-list-reports-api:latest
+    image: todo-list-reports-api
+    build:
+      context: ./todo-list-backend/TodoList.Reports.Api
+      dockerfile: Dockerfile
 
   db:
     image: postgres:15.0-alpine
