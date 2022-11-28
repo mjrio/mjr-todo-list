@@ -1,23 +1,41 @@
 # Required
 services:
   app:
-    image: todo-list-app:latest
+    image: todo-list-app
+    build: ./src/todo-list-frontend
     ports:
       - 8080:80
+    volumes:
+      - front-html:/usr/share/nginx/html
+    depends_on:
+      - api
 
   api:
-    image: todo-list-api:latest
+    image: todo-list-api
+    build:
+      context: ./src/todo-list-backend/TodoList.Api
     ports:
       - 5166:5166
     env_file:
       ./api.env
+    depends_on:
+      - reports-api
+      - db
 
   reports-api:
-    image: todo-list-reports-api:latest
+    image: todo-list-reports-api
+    build:
+      context: ./src/todo-list-backend/TodoList.Reports.Api
+      dockerfile: Dockerfile
 
   db:
     image: postgres:15.0-alpine
     environment:
       - POSTGRES_PASSWORD=password
       - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - db-data:/var/lib/postgresql/data/pgdata
 
+volumes:
+  front-html:
+  db-data:
