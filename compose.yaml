@@ -7,6 +7,8 @@ services:
       - 8080:80
     volumes:
       - front-html:/usr/share/nginx/html
+    depends_on:
+      - api
 
   api:
     image: todo-list-api
@@ -16,6 +18,9 @@ services:
       - 5166:5166
     env_file:
       ./api.env
+    depends_on:
+      - reports-api
+      - db
 
   reports-api:
     image: todo-list-reports-api
@@ -28,6 +33,8 @@ services:
     environment:
       - POSTGRES_PASSWORD=password
       - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - db-data:/var/lib/postgresql/data/pgdata
 
 volumes:
   front-html:
