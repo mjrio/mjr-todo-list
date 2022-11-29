@@ -18,8 +18,6 @@ spec:
           env:
             - name: Database__Provider
               value: postgres
-Database__ConnectionString="Host=todo-list-db:5432;Username=postgres;Password=password;Database=postgres"
-Reports__Address=http://reports-api:5218
           resources:
             limits:
               memory: "128Mi"

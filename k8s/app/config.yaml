@@ -1,0 +1,11 @@
+apiVersion: v1
+data:
+  config.json: |
+    {
+      "todoApi": {
+        "url": "http://localhost:30011"
+      }
+    }
+kind: ConfigMap
+metadata:
+  name: app-config
