@@ -11,6 +11,10 @@ spec:
       labels:
         app: todo-list-db
     spec:
+      volumes:
+        - name: pg-data
+          persistentVolumeClaim:
+            claimName: pg-volume-claim
       containers:
         - name: todo-list-db
           image: postgres:15.0-alpine
@@ -19,6 +23,10 @@ spec:
               value: password
             - name: PGDATA
               value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: pg-data
+              mountPath: /var/lib/postgresql/data
+              subPath: postgres
           resources:
             limits:
               memory: "128Mi"

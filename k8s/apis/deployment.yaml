@@ -35,6 +35,10 @@ spec:
             limits:
               memory: "128Mi"
               cpu: 200m
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5166
 ---
 apiVersion: apps/v1
 kind: Deployment
