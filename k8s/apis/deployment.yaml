@@ -18,6 +18,11 @@ spec:
           env:
             - name: Database__Provider
               value: postgres
+            - name: Database__ConnectionString
+              valueFrom:
+                secretKeyRef:
+                  name: connectionstring
+                  key: connstring
           resources:
             limits:
               memory: "128Mi"
