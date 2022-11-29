@@ -11,10 +11,18 @@ spec:
       labels:
         app: todo-list-api
     spec:
+      volumes:
+        - name: config-volume
+          configMap:
+            name: appsettings-config
       containers:
         - name: todo-list-api
           image: todo-list-api:latest
           imagePullPolicy: Never
+          volumeMounts:
+            - name: config-volume
+              mountPath: appsettings.json
+              subPath: appsettings.json
           env:
             - name: Database__Provider
               value: postgres
