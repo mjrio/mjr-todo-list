@@ -14,7 +14,7 @@ builder.Services.AddCors();
 builder.Services.AddHealthChecks();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddHttpClient<IReportsClient, ReportsClient>(httpClient => httpClient.BaseAddress = new Uri(builder.Configuration["Reports:Address"]));
+builder.Services.AddScoped<IReportsClient, ReportsClient>();
 
 var dbProvider = builder.Configuration.GetValue<DbProvider>("Database:Provider");
 var dbConnectionString = builder.Configuration.GetValue<string>("Database:ConnectionString");
