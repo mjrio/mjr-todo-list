@@ -7,13 +7,15 @@ using TodoList.Reports.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer()
-                .AddSwaggerGen();
+builder.Services.AddHealthChecks();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.UseSwagger()
-   .UseSwaggerUI();
+app.UseHealthChecks("/health");
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.MapGet("/", () => "Hello, World!");
 
