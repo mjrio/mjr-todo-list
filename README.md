@@ -24,7 +24,7 @@
 
 2. Create network todo-list-network:
 
-    ``` 
+    ```
     docker network create todo-list-network
     ```
 
@@ -33,7 +33,7 @@
    ```
    docker volume create todo-list-reports-volume
    ```
-   
+
    ```
    docker volume create todo-list-db-volume
    ```
@@ -55,3 +55,11 @@
     ```
     docker run --name todo-list-app -dp 8080:80 --net todo-list-network todo-list-app
     ```
+
+## Kubernetes
+To run everything with a load balanced backend api:
+```
+kubectl apply -f .\k8s\app
+kubectl apply -f .\k8s\apis
+kubectl apply -f .\k8s\db
+```
