@@ -37,6 +37,8 @@ app.UseSwaggerUI();
 
 app.MapGet("/", () => "Hello, World!");
 
+app.MapGet("/diagnostics", () => new Diagnostics { Hostname = Environment.MachineName, DatabaseProvider = dbProvider.ToString() });
+
 app.MapGet("/todos", async (TodoListContext context) =>
 {
     var todos = await context.Todos.OrderByDescending(t => t.CreatedOn).ToListAsync();
