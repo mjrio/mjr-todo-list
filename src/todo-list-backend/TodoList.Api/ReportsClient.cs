@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -10,9 +12,9 @@ public class ReportsClient : IReportsClient
 {
     private readonly HttpClient _httpClient;
 
-    public ReportsClient(HttpClient httpClient)
+    public ReportsClient(IConfiguration configuration)
     {
-        _httpClient = httpClient;
+        _httpClient = new HttpClient { BaseAddress = new Uri(configuration["Reports:Address"]) };
     }
 
     public async Task<IEnumerable<string>> GetReport(IEnumerable<Todo> todos)
