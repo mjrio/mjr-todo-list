@@ -63,3 +63,5 @@ kubectl apply -f .\k8s\app
 kubectl apply -f .\k8s\apis
 kubectl apply -f .\k8s\db
 ```
+The app is available on http://localhost:30010
+The api Swagger UI on http://localhost:5166/swagger
