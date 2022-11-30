@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { BehaviorSubject, Observable, Subscription, switchMap } from 'rxjs';
-import { Todo, TodoListApiService } from './todo-list-api.service';
+import { Diagnostics, Todo, TodoListApiService } from './todo-list-api.service';
 
 @Component({
   selector: 'app-root',
@@ -23,7 +23,7 @@ import { Todo, TodoListApiService } from './todo-list-api.service';
 
   <section>
     <h2>Your to do's</h2>
-    <ng-container *ngIf="$todos | async as todos; else noTodos">
+    <ng-container *ngIf="todos$ | async as todos; else noTodos">
       <table *ngIf="todos.length; else noTodos">
         <tr *ngFor="let todo of todos">
           <td [class.done]="todo.isDone">{{ todo.description }}</td>
@@ -46,14 +46,21 @@ import { Todo, TodoListApiService } from './todo-list-api.service';
     <p>Click the button below to create a new report.</p>
     <button type="submit" (click)="createReport()">Create report</button>
   </section>
+
+  <footer>
+    <ng-container *ngIf="diagnostics$ | async as diagnostics">
+      API hostname: {{ diagnostics.hostname }} | DB provider: {{ diagnostics.databaseProvider }}
+    </ng-container>
+  </footer>
   `,
   styles: []
 })
 export class AppComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
-  private $refresh: BehaviorSubject<boolean> = new BehaviorSubject(true);
+  private refresh$: BehaviorSubject<boolean> = new BehaviorSubject(true);
   
-  public $todos: Observable<Todo[]> | undefined;
+  public todos$: Observable<Todo[]> | undefined;
+  public diagnostics$: Observable<Diagnostics> | undefined;
 
   public description: string = "";
 
@@ -61,7 +68,8 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.$todos = this.$refresh.pipe(switchMap(() => this.todoListApiService.getTodos()));
+    this.todos$ = this.refresh$.pipe(switchMap(() => this.todoListApiService.getTodos()));
+    this.diagnostics$ = this.refresh$.pipe(switchMap(() => this.todoListApiService.getDiagnostics()));
   }
 
   ngOnDestroy(): void {
@@ -72,21 +80,21 @@ export class AppComponent implements OnInit, OnDestroy {
     let todo = new Todo(this.description, false);
 
     this.subscriptions.add(this.todoListApiService.createTodo(todo).subscribe({
-      next: () => { this.description = ""; this.$refresh.next(true); },
+      next: () => { this.description = ""; this.refresh$.next(true); },
       error: () => alert("Failed to create to do. Please try again later.")
     }));
   }
 
   markDone(todo: Todo): void {
     this.subscriptions.add(this.todoListApiService.updateTodo({ ...todo, isDone: true }).subscribe({
-      next: () => this.$refresh.next(true),
+      next: () => this.refresh$.next(true),
       error: () => alert("Failed to mark to do as done. Please try again later.")
     }));
   }
 
   deleteTodo(todo: Todo): void {
     this.subscriptions.add(this.todoListApiService.deleteTodo(todo).subscribe({
-      next: () => this.$refresh.next(true),
+      next: () => this.refresh$.next(true),
       error: () => alert("Failed to delete to do. Please try again later.")
     }));
   }

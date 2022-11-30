@@ -7,12 +7,17 @@ import { map, Observable, switchMap } from 'rxjs';
 })
 export class TodoListApiService {
   constructor(private httpClient: HttpClient) {
-   }
-   getUrl(){
+  }
+
+  getUrl(): Observable<string> {
     return this.httpClient.get('assets/config.json').pipe(map(config =>
-        ((config as any).todoApi as any).url as string
+      ((config as any).todoApi as any).url as string
     ));
-   }
+  }
+
+  getDiagnostics(): Observable<Diagnostics> {
+    return this.getUrl().pipe(switchMap(apiUrl => this.httpClient.get<Diagnostics>(`${apiUrl}/diagnostics`)))
+  }
 
   getTodos(): Observable<Todo[]> {
     return this.getUrl().pipe(switchMap(apiUrl => this.httpClient.get<Todo[]>(`${apiUrl}/todos`)));
@@ -48,4 +53,14 @@ export class Todo {
   id: number | undefined;
   description: string;
   isDone: boolean;
+}
+
+export class Diagnostics {
+  constructor(hostname: string, databaseProvider: string) {
+    this.hostname = hostname;
+    this.databaseProvider = databaseProvider;
+  }
+
+  hostname: string;
+  databaseProvider: string;
 }
