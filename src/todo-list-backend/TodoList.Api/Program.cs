@@ -10,10 +10,11 @@ using TodoList.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddCors()
-                .AddEndpointsApiExplorer()
-                .AddSwaggerGen()
-                .AddHttpClient<IReportsClient, ReportsClient>(httpClient => httpClient.BaseAddress = new Uri(builder.Configuration["Reports:Address"]));
+builder.Services.AddCors();
+builder.Services.AddHealthChecks();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddHttpClient<IReportsClient, ReportsClient>(httpClient => httpClient.BaseAddress = new Uri(builder.Configuration["Reports:Address"]));
 
 var dbProvider = builder.Configuration.GetValue<DbProvider>("Database:Provider");
 var dbConnectionString = builder.Configuration.GetValue<string>("Database:ConnectionString");
@@ -29,9 +30,10 @@ var app = builder.Build();
 
 app.UseCors(builder => builder.AllowAnyHeader()
                               .AllowAnyMethod()
-                              .AllowAnyOrigin())
-   .UseSwagger()
-   .UseSwaggerUI();
+                              .AllowAnyOrigin());
+app.UseHealthChecks("/health");
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.MapGet("/", () => "Hello, World!");
 
