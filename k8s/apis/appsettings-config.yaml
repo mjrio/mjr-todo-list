@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: appsettings-config
 data:
-  appsetings.json: |
+  appsettings.json: |
     {
       "AllowedHosts": "*",
       "Database": {
@@ -17,7 +17,7 @@ data:
         }
       },
       "Reports": {
-        "Address": "http://todo-list-reports-api:5218",
+        "Address": "http://todo-list-reports-api",
         "Path": "/todo-reports"
       },
       "Urls": "http://*:5166"
